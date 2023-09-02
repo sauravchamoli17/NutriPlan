@@ -1,0 +1,17 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Circular-Bold.ttf",
+      "sha1": "80568d5bc2cee2eaecbf43a19b91b2370dcc89b7"
+    },
+    {
+      "path": "assets/fonts/Circular-Book.ttf",
+      "sha1": "ca3a8ab1fdd96a9fbc2bdb6ff1a3c2fa116ef8df"
+    },
+    {
+      "path": "assets/fonts/Circular-Medium.ttf",
+      "sha1": "b7a1feeb1e7fb179541710de9525e4f5230c662a"
+    }
+  ]
+}
