@@ -1,66 +1,129 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import { Button } from 'react-native-paper';
+import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
+import Onboarding from 'react-native-onboarding-swiper';
+import LottieView from 'lottie-react-native';
 import globalStyles from '../styles/globalStyles';
+import { setItem } from '../utils/asyncStorage';
+
+const { width, height } = Dimensions.get('window');
 
 const OnboardingScreen = ({ navigation }) => {
+  const handleDone = () => {
+    navigation.navigate('Home');
+    setItem('onboarded', '1');
+  };
+
+  const doneButton = ({ ...props }) => {
+    return (
+      <TouchableOpacity style={styles.doneButton} {...props}>
+        <Text style={{ ...globalStyles.circularMedium, ...globalStyles.colorWhite }}>Done</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  const skipButton = ({ ...props }) => {
+    return (
+      <TouchableOpacity style={styles.doneButton} {...props}>
+        <Text style={{ ...globalStyles.circularMedium, ...globalStyles.colorWhite }}>Skip</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  const nextButton = ({ ...props }) => {
+    return (
+      <TouchableOpacity style={styles.doneButton} {...props}>
+        <Text style={{ ...globalStyles.circularMedium, ...globalStyles.colorWhite }}>Next</Text>
+      </TouchableOpacity>
+    )
+  }
+
   return (
-    <View style={{...globalStyles.container, borderColor: 'red', borderWidth: 10}}>
-      <ImageBackground
-        source={{ uri: 'https://res.cloudinary.com/dg6ijhjsn/image/upload/v1693654751/nutriplan-background_liui89.jpg' }}
-        style={styles.backgroundImage}
-      >
-        <View style={styles.overlay}>
-          <Text style={styles.title}>Welcome to NutriPlan</Text>
-          <Text style={styles.subtitle}>Embark on a Healthier Journey</Text>
-          <Button
-            mode="contained"
-            onPress={() => navigation.navigate('Main')}
-            style={styles.button}
-            labelStyle={styles.buttonLabel}
-          >
-            Get Started
-          </Button>
-        </View>
-      </ImageBackground>
+    <View style={{ ...globalStyles.container }}>
+      <Onboarding
+        onDone={handleDone}
+        onSkip={handleDone}
+        DoneButtonComponent={doneButton}
+        SkipButtonComponent={skipButton}
+        NextButtonComponent={nextButton}
+        titleStyles={styles.title}
+        subTitleStyles={styles.subtitle}
+        pages={[
+          {
+            backgroundColor: '#A52A2A',
+            image: (
+              <View style={{ ...styles.lottie }}>
+                <LottieView
+                  source={require('../assets/animations/step-1.json')}
+                  autoPlay
+                />
+              </View>
+            ),
+            title: 'Welcome to NutriPlan',
+            subtitle: "Let's start your journey to a healthier you. NutriPlan provides personalized diet plans and nutrition advice tailored just for you.",
+          },
+          {
+            backgroundColor: '#006400',
+            image: (
+              <View style={{ ...styles.lottie }}>
+                <LottieView
+                  source={require('../assets/animations/step-2.json')}
+                  autoPlay
+                />
+              </View>
+            ),
+            title: 'Set Your Health Goals',
+            subtitle: "What's your goal? Whether it's weight loss, muscle gain, or maintaining a healthy lifestyle, NutriPlan will help you get there.",
+          },
+          {
+            backgroundColor: '#4B0082',
+            image: (
+              <View style={{ ...styles.lottie }}>
+                <LottieView
+                  source={require('../assets/animations/step-3.json')}
+                  autoPlay
+                />
+              </View>
+            ),
+            title: 'Personalized Diet Plans',
+            subtitle: "NutriPlan uses advanced algorithms to create a diet plan that fits your preferences, dietary restrictions, and nutritional needs.",
+          },
+          {
+            backgroundColor: '#333333',
+            image: (
+              <View style={{ ...styles.lottie }}>
+                <LottieView
+                  source={require('../assets/animations/step-4.json')}
+                  autoPlay
+                />
+              </View>
+            ),
+            title: "Let's Get Started",
+            subtitle: "Ready to take the first step toward a healthier you? Tap 'Get Started' to access your personalized diet plan.",
+          },
+        ]}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
+  lottie: {
+    width: width * 0.9,
+    height: width
   },
-  overlay: {
-    flex: 1, // Fill the entire screen
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent overlay
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%', 
-  },
-  title: {
-    ...globalStyles.text,
-    fontSize: 32,
-    color: 'white',
-    marginBottom: 16,
-    textAlign: 'center',
+  doneButton: {
+    padding: 20
   },
   subtitle: {
-    ...globalStyles.text,
-    fontSize: 20,
-    color: 'white',
-    marginBottom: 32,
-    textAlign: 'center',
+    ...globalStyles.circularBook,
+    ...globalStyles.colorWhite, 
+    paddingHorizontal: 10, 
+    lineHeight: width * 0.05
   },
-  button: {
-    width: '80%',
-    paddingVertical: 12,
-    backgroundColor: globalStyles.primaryButton,
-  },
-  buttonLabel: {
-    fontSize: 18,
-  },
+  title:{
+    ...globalStyles.circularBook, 
+    ...globalStyles.colorWhite
+  }
 });
 
 export default OnboardingScreen;

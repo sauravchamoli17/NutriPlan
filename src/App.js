@@ -9,12 +9,14 @@ import LottieView from 'lottie-react-native';
 import OnboardingScreen from './screens/OnboardingScreen';
 import HomeScreen from './screens/HomeScreen';
 import DietPlanScreen from './screens/DietPlanScreen';
+import { getItem } from './utils/asyncStorage';
 import globalStyles from './styles/globalStyles';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(null);
 
   const onAnimationFinish = async () => {
     setLoading(false);
@@ -80,6 +82,19 @@ const App = () => {
     );
   };
 
+  const checkIfAlreadyOnboarded = async () => {
+    let onboarded = await getItem('onboarded');
+    if (onboarded == 1) {
+      setShowOnboarding(false);
+    } else {
+      setShowOnboarding(true);
+    }
+  }
+
+  useEffect(() => {
+    checkIfAlreadyOnboarded();
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar barStyle="dark-content" />
@@ -93,13 +108,22 @@ const App = () => {
               onAnimationFinish={onAnimationFinish}
             />
           ) : (
-            <View style={{...globalStyles.container, borderColor: 'black', borderWidth: 12}}>
-            <Stack.Navigator initialRouteName="Onboarding">
-              <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ title: '' }} />
-              <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Your Diet Plan App' }} />
-              <Stack.Screen name="DietPlan" component={DietPlanScreen} options={{ title: 'Diet Plan' }} />
-            </Stack.Navigator>
-            </View>
+            <>
+              {
+                showOnboarding ?
+                  <Stack.Navigator initialRouteName="Onboarding">
+                    <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ title: '', headerShown: false }} />
+                    <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Your Diet Plan App' }} />
+                    <Stack.Screen name="DietPlan" component={DietPlanScreen} options={{ title: 'Diet Plan' }} />
+                  </Stack.Navigator>
+                    :
+                  <Stack.Navigator initialRouteName="Home">
+                    <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Your Diet Plan App' }} />
+                    <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ title: '', headerShown: false }} />
+                    <Stack.Screen name="DietPlan" component={DietPlanScreen} options={{ title: 'Diet Plan' }} />
+                  </Stack.Navigator>
+              }
+            </>
           )}
         </NavigationContainer>
       </PaperProvider>
