@@ -2,14 +2,14 @@ import React from 'react';
 import { View, StyleSheet, Dimensions, TouchableOpacity, Text } from 'react-native';
 import Onboarding from 'react-native-onboarding-swiper';
 import LottieView from 'lottie-react-native';
-import globalStyles from '../styles/globalStyles';
+import {globalStyles} from '../styles/globalStyles';
 import { setItem } from '../utils/asyncStorage';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 const OnboardingScreen = ({ navigation }) => {
   const handleDone = () => {
-    navigation.navigate('Home');
+    navigation.navigate('ProfileSetup');
     setItem('onboarded', '1');
   };
 

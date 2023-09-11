@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { BackHandler, Alert, SafeAreaView, StatusBar, View } from 'react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { SafeAreaView, StatusBar, Platform } from 'react-native';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+import { lightColors, createTheme, ThemeProvider } from '@rneui/themed';
+import Toast from 'react-native-toast-message';
 import LottieView from 'lottie-react-native';
 import OnboardingScreen from './screens/OnboardingScreen';
+import LocationScreen from './screens/LocationScreen';
+import ProfileSetupScreen from './screens/ProfileSetupScreen';
 import HomeScreen from './screens/HomeScreen';
 import DietPlanScreen from './screens/DietPlanScreen';
-import { getItem } from './utils/asyncStorage';
-import globalStyles from './styles/globalStyles';
+import { getItem, setItem } from './utils/asyncStorage';
 
 const Stack = createStackNavigator();
+const theme = createTheme({
+  lightColors: {
+    ...Platform.select({
+      default: lightColors.platform.android,
+      ios: lightColors.platform.ios,
+    }),
+  },
+});
 
 const App = () => {
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(null);
+  const [isProfileCreated, setProfileCreated] = useState(null);
+  const [isLocationAvailable, setIsLocationAvailable] = useState(true);
 
   const onAnimationFinish = async () => {
     setLoading(false);
@@ -37,7 +49,7 @@ const App = () => {
         console.log('Location permission granted.');
       } else {
         console.log('Location permission denied.');
-        showAlertAndCloseApp();
+        setIsLocationAvailable(false);
       }
     } catch (error) {
       console.error('Error requesting location permission:', error);
@@ -54,40 +66,23 @@ const App = () => {
       })
       .catch((err) => {
         if (err.code == "ERR00") {
-          showAlertAndCloseApp();
+          setIsLocationAvailable(false);
         }
-        // The user has not accepted to enable the location services or something went wrong during the process
-        // "err" : { "code" : "ERR00|ERR01|ERR02|ERR03", "message" : "message"}
-        // codes :
-        //  - ERR00 : The user has clicked on Cancel button in the popup
-        //  - ERR01 : If the Settings change are unavailable
-        //  - ERR02 : If the popup has failed to open
-        //  - ERR03 : Internal error
       });
-  };
-
-  const showAlertAndCloseApp = () => {
-    Alert.alert(
-      'Location Permission Required',
-      'This app requires location permission to function. Please grant permission in your device settings and restart the app.',
-      [
-        {
-          text: 'Close App',
-          onPress: () => {
-            BackHandler.exitApp();
-          },
-        },
-      ],
-      { cancelable: false }
-    );
   };
 
   const checkIfAlreadyOnboarded = async () => {
     let onboarded = await getItem('onboarded');
+    let profileData = await getItem('profileData');
     if (onboarded == 1) {
       setShowOnboarding(false);
     } else {
       setShowOnboarding(true);
+    }
+    if (profileData == null) {
+      setProfileCreated(false);
+    } else {
+      setProfileCreated(true);
     }
   }
 
@@ -96,9 +91,9 @@ const App = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar barStyle="dark-content" />
-      <PaperProvider>
+    <ThemeProvider theme={theme}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <StatusBar backgroundColor='#6366f1' barStyle="light-content" />
         <NavigationContainer>
           {loading ? (
             <LottieView
@@ -109,25 +104,19 @@ const App = () => {
             />
           ) : (
             <>
-              {
-                showOnboarding ?
-                  <Stack.Navigator initialRouteName="Onboarding">
-                    <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ title: '', headerShown: false }} />
-                    <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Your Diet Plan App' }} />
-                    <Stack.Screen name="DietPlan" component={DietPlanScreen} options={{ title: 'Diet Plan' }} />
-                  </Stack.Navigator>
-                    :
-                  <Stack.Navigator initialRouteName="Home">
-                    <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Your Diet Plan App' }} />
-                    <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ title: '', headerShown: false }} />
-                    <Stack.Screen name="DietPlan" component={DietPlanScreen} options={{ title: 'Diet Plan' }} />
-                  </Stack.Navigator>
-              }
+              <Stack.Navigator initialRouteName={showOnboarding ? 'Onboarding' : isProfileCreated ? 'Home' : 'ProfileSetup'}>
+                <Stack.Screen name="Onboarding" component={OnboardingScreen} options={{ title: '', headerShown: false }} />
+                <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Location" component={LocationScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home', headerShown: false }} />
+                <Stack.Screen name="DietPlan" component={DietPlanScreen} options={{ title: 'Diet Plan' }} />
+              </Stack.Navigator>
             </>
           )}
         </NavigationContainer>
-      </PaperProvider>
-    </SafeAreaView>
+        <Toast />
+      </SafeAreaView>
+    </ThemeProvider>
   );
 };
 

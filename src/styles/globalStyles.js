@@ -1,6 +1,9 @@
 import { StyleSheet } from "react-native";
+import { Dimensions } from "react-native";
 
-const Colors = {
+const { width, height } = Dimensions.get('window');
+
+export const Colors = {
   primaryBackground: '#F5F5F5',
   primaryText: '#333333',
   primaryButton: '#007AFF',
@@ -17,7 +20,7 @@ const Colors = {
   black: '#000000'
 };
 
-const globalStyles = StyleSheet.create({
+export const globalStyles = StyleSheet.create({
   container: {
     flex: 1
   },
@@ -30,6 +33,21 @@ const globalStyles = StyleSheet.create({
   circularMedium: {
     fontFamily: 'Circular-Medium'
   },
+  label: {
+    fontFamily: 'Circular-Book',
+    fontWeight: 'normal',
+    color: Colors.white
+  },
+  input: {
+    fontFamily: 'Circular-Book',
+    fontWeight: 'normal',
+    color: Colors.white
+  },
+  inputContainer: {
+    marginVertical: width * 0.030,
+    color: Colors.white,
+    borderBottomColor: Colors.white
+  },
   primaryButton: {
     backgroundColor: Colors.primaryBackground,
   },
@@ -40,5 +58,3 @@ const globalStyles = StyleSheet.create({
     color: Colors.black
   }
 });
-
-export default globalStyles;
