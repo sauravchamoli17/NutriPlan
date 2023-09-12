@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, Dimensions, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import { getItem, removeItem } from '../utils/asyncStorage';
 import LottieView from 'lottie-react-native';
 import { globalStyles } from '../styles/globalStyles';
@@ -39,10 +39,10 @@ export default function HomeScreen({ navigation }) {
         },
         {
           text: 'No',
-          style: 'cancel', // This is the default option when tapping outside the dialog
+          style: 'cancel', 
         },
       ],
-      { cancelable: true } // Allow tapping outside the dialog to cancel
+      { cancelable: true }
     );
   };
 

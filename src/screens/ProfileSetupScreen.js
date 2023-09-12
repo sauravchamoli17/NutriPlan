@@ -189,7 +189,7 @@ const ProfileSetupScreen = ({ navigation }) => {
                                     >
                                         <Picker.Item label="Select Height (Inches)" value="" />
                                         {Array.from({ length: 12 }, (_, i) => (
-                                            <Picker.Item key={i + 1} label={(i + 1).toString()} value={(i + 1).toString()} />
+                                            <Picker.Item key={i} label={(i).toString()} value={(i).toString()} />
                                         ))}
                                     </Picker>
                                 </View>
